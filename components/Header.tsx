@@ -2,14 +2,21 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Shield, AlertTriangle, Bell, Menu, X, Radio, Clock, Activity } from 'lucide-react';
-import { formatDate } from '@/lib/utils';
+import { Globe, AlertTriangle, Bell, Menu, X, Radio, Clock, Activity } from 'lucide-react';
 
 export default function Header() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [menuOpen, setMenuOpen] = useState(false);
   const [notifications, setNotifications] = useState(3);
   const [systemStatus, setSystemStatus] = useState('ONLINE');
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -26,24 +33,28 @@ export default function Header() {
     { name: 'ANALYTICS', href: '#analytics' },
   ];
 
+  const formatDate = (date: Date) => {
+    return date.toISOString().replace('T', ' ').substring(0, 19);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-x7-black/95 backdrop-blur-xl border-b border-x7-border/50">
       <div className="scan-overlay">
         <div className="scan-line" />
       </div>
 
-      <div className="max-w-[1920px] mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-[1920px] mx-auto px-3 md:px-4 h-12 md:h-16 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 md:gap-3">
           <div className="relative">
-            <Globe className="w-8 h-8 text-x7-blue" />
+            <Globe className="w-6 h-6 md:w-8 md:h-8 text-x7-blue" />
             <div className="absolute inset-0 bg-x7-blue/20 blur-lg rounded-full" />
           </div>
           <div>
-            <h1 className="font-display text-lg tracking-wider text-white">
+            <h1 className="font-display text-sm md:text-lg tracking-wider text-white">
               X7 <span className="text-x7-blue">GEOINT</span>
             </h1>
-            <p className="text-[10px] font-mono text-x7-text-muted tracking-widest">
+            <p className="hidden md:block text-[10px] font-mono text-x7-text-muted tracking-widest">
               COMMAND CENTER v2.4.1
             </p>
           </div>
@@ -55,7 +66,7 @@ export default function Header() {
             <a
               key={item.name}
               href={item.href}
-              className={`px-4 py-2 text-xs font-mono tracking-wider transition-all duration-300 border-b-2 ${
+              className={`px-3 md:px-4 py-2 text-[10px] md:text-xs font-mono tracking-wider transition-all duration-300 border-b-2 ${
                 item.active
                   ? 'text-x7-blue border-x7-blue bg-x7-blue/5'
                   : 'text-x7-text-muted border-transparent hover:text-x7-text hover:border-x7-border'
@@ -67,47 +78,47 @@ export default function Header() {
         </nav>
 
         {/* Right Side */}
-        <div className="flex items-center gap-4">
-          {/* System Status */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-x7-military/10 border border-x7-military/30 rounded">
-            <Activity className="w-3 h-3 text-x7-military" />
-            <span className="text-xs font-mono text-x7-military">{systemStatus}</span>
+        <div className="flex items-center gap-2 md:gap-4">
+          {/* System Status - hidden on small mobile */}
+          <div className="hidden sm:flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 bg-x7-military/10 border border-x7-military/30 rounded">
+            <Activity className="w-2.5 h-2.5 md:w-3 md:h-3 text-x7-military" />
+            <span className="text-[9px] md:text-xs font-mono text-x7-military">{systemStatus}</span>
           </div>
 
-          {/* Clock */}
+          {/* Clock - hidden on mobile */}
           <div className="hidden md:flex items-center gap-2 text-xs font-mono text-x7-text-muted">
             <Clock className="w-3 h-3" />
             <span>{formatDate(currentTime)} UTC</span>
           </div>
 
           {/* Radio Status */}
-          <div className="hidden sm:flex items-center gap-1.5">
-            <Radio className="w-3 h-3 text-x7-blue animate-pulse" />
-            <span className="text-[10px] font-mono text-x7-blue">LIVE FEED</span>
+          <div className="hidden sm:flex items-center gap-1 md:gap-1.5">
+            <Radio className="w-2.5 h-2.5 md:w-3 md:h-3 text-x7-blue animate-pulse" />
+            <span className="text-[9px] md:text-[10px] font-mono text-x7-blue">LIVE</span>
           </div>
 
           {/* Notifications */}
-          <button className="relative p-2 hover:bg-x7-gray/50 rounded transition-colors">
-            <Bell className="w-5 h-5 text-x7-text-muted" />
+          <button className="relative p-1.5 md:p-2 hover:bg-x7-gray/50 rounded transition-colors">
+            <Bell className="w-4 h-4 md:w-5 md:h-5 text-x7-text-muted" />
             {notifications > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-x7-red text-white text-[10px] font-mono rounded-full flex items-center justify-center">
+              <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 md:w-4 md:h-4 bg-x7-red text-white text-[8px] md:text-[10px] font-mono rounded-full flex items-center justify-center">
                 {notifications}
               </span>
             )}
           </button>
 
-          {/* Alert Badge */}
-          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-x7-red/10 border border-x7-red/30 rounded animate-pulse">
-            <AlertTriangle className="w-3 h-3 text-x7-red" />
-            <span className="text-xs font-mono text-x7-red">ALERT LEVEL: ORANGE</span>
+          {/* Alert Badge - hidden on small mobile */}
+          <div className="hidden md:flex items-center gap-2 px-2 md:px-3 py-1 md:py-1.5 bg-x7-red/10 border border-x7-red/30 rounded animate-pulse">
+            <AlertTriangle className="w-2.5 h-2.5 md:w-3 md:h-3 text-x7-red" />
+            <span className="text-[9px] md:text-xs font-mono text-x7-red">ALERT: ORANGE</span>
           </div>
 
           {/* Mobile Menu */}
           <button
-            className="lg:hidden p-2 hover:bg-x7-gray/50 rounded transition-colors"
+            className="lg:hidden p-1.5 md:p-2 hover:bg-x7-gray/50 rounded transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {menuOpen ? <X className="w-4 h-4 md:w-5 md:h-5" /> : <Menu className="w-4 h-4 md:w-5 md:h-5" />}
           </button>
         </div>
       </div>
@@ -121,12 +132,12 @@ export default function Header() {
             exit={{ height: 0, opacity: 0 }}
             className="lg:hidden bg-x7-dark border-t border-x7-border/50 overflow-hidden"
           >
-            <nav className="p-4 space-y-1">
+            <nav className="p-3 md:p-4 space-y-1">
               {navItems.map((item) => (
                 <a
                   key={item.name}
                   href={item.href}
-                  className={`block px-4 py-3 text-sm font-mono tracking-wider transition-colors ${
+                  className={`block px-3 md:px-4 py-2.5 md:py-3 text-xs md:text-sm font-mono tracking-wider transition-colors ${
                     item.active
                       ? 'text-x7-blue bg-x7-blue/5 border-l-2 border-x7-blue'
                       : 'text-x7-text-muted hover:text-x7-text hover:bg-x7-gray/30'
