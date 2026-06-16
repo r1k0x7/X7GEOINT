@@ -128,4 +128,3 @@ export interface Alert {
   region: string;
   acknowledged: boolean;
 }
-
