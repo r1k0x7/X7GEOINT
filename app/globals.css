@@ -182,3 +182,42 @@
 .cesium-viewer-fullscreenContainer {
   display: none !important;
 }
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .hud-panel {
+    padding: 0.5rem !important;
+  }
+
+  .hud-panel::before,
+  .hud-panel::after {
+    width: 6px !important;
+    height: 6px !important;
+  }
+
+  .hud-title {
+    font-size: 8px !important;
+    padding-bottom: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  body {
+    font-size: 12px;
+  }
+
+  canvas {
+    touch-action: pan-y !important;
+  }
+}
+
+/* Prevent text selection on mobile */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
